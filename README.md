@@ -13,11 +13,12 @@ slice-by-slice record and says what would move back upstream.
 
 ## Ground rules
 
-- **No family PII.** No names, addresses, or phone numbers for referred
-  households — not in the DB, URLs, logs, or CSV exports. A household is a
-  reference code and a story. No photos, ever. The one exception, decided
-  and dated: the family's email, in its own table, deleted on rejection and
-  purged after the season.
+- **No family PII.** No last names, children's names or addresses for
+  referred households — not in the DB, URLs, logs, or CSV exports. A
+  household is a reference code and a story. No photos, ever. The one
+  exception, decided and dated (2026-10-21): the contact's first name,
+  email and/or phone, and who referred them, in an admin-only table,
+  deleted on rejection and purged after the season.
 - **RLS on every table from the first migration.** Default deny. No table
   ships without a policy and a test proving denial. Where the public may see
   some columns of a row but not others, there is a view.
@@ -39,7 +40,7 @@ slice-by-slice record and says what would move back upstream.
 | Who | Pages | What they do |
 |---|---|---|
 | Anyone | `/`, `/browse.html`, `/story.html` | The landing page, the public list of live households, one family's story and wish list. No account needed. |
-| A family | `/refer.html#t=…` | Opens a one-time link from the coordinator, fills in one form, gets a referral number. |
+| A family, or someone helping them | `/refer.html#t=…` | Opens a link from the coordinator (one or many uses), fills in one form, gets a referral number. |
 | A donor | `/signin.html`, `/story.html`, `/confirmed.html`, `/mine.html` | Signs in with Google, claims a household (one atomic claim, capped per sponsor), sees the drop-off details, ticks items, marks delivered, or releases. |
 | The coordinator | `/dashboard.html`, `/queue.html`, `/links.html`, `/exceptions.html`, `/settings.html`, `/admins.html` | The console: the whole drive in one look, the approval queue with checks and a private note, referral links, exceptions and the activity log, the season's dates and rules, close-out, and who the admins are. |
 
@@ -135,11 +136,11 @@ Everything hangs off `campaigns` — no `organizations` table above it.
 | Table | Holds | Who reads it |
 |---|---|---|
 | `campaigns` | name, year, the four dates, rules, drop-off details, status | public columns through `public_campaign`; the admin reads the table; donors get drop-off details through a function once they hold a claim |
-| `households` | ref code, one-line summary, story, consents, status, the admin's private note, an on-behalf submitter's private reference | the admin; the public through `public_households` (live, unclaimed, open drive; story only with consent) |
+| `households` | ref code, one-line summary, story (shown only if the family opts in), consents, status, the family's private note to the coordinator, the admin's private note | the admin; the public through `public_households` (live, unclaimed, open drive; story only with consent) |
 | `household_members` | role from a fixed list, age, sizes — **no names** | the admin; the public and claimants through views |
 | `wish_items` | one row per item, need or would-love, bought-at | same |
-| `household_contacts` | email and/or phone, which to try first, and whose they are (the household's own, or the submitter's) | the admin only; deleted on rejection, withdrawal, and by the purge |
-| `referral_links` | SHA-256 of the token, expiry, uses against a limit of up to 1000 | the admin; households remember which link they came through |
+| `household_contacts` | first name, email and/or phone, which to try first, who referred them, and whether the person is not the parent or guardian | the admin only; deleted on rejection, withdrawal, and by the purge |
+| `referral_links` | SHA-256 of the token, expiry chosen per link (1–90 days), uses against a limit of up to 1000 | the admin; households remember which link they came through |
 | `claims` | household, donor (or an offline label), status, timestamps | the admin through `claims_with_sponsor`; a donor's own through `my_claims` |
 | `profiles` | role: `admin` or `donor` | each account reads its own row; admins add and remove admins through functions, never the last one |
 | `admin_invites` | lower-cased email, who invited, used-at | the admin; a pending invite promotes the matching account on its first sign-in. The first admin is seeded this way by a migration, so no SQL is ever run by hand |

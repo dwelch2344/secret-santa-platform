@@ -335,6 +335,23 @@ own words, you understand the slice.
   (bad phone, no contact, identifying text) leaves the counter alone, so
   a mistake never costs a family their place.
 
+### 22. Alex's PR, and the contact fields locked — issues #74, #77
+
+- Alex's PR #73 merged as written: per-link expiry (1–90 days), "donor"
+  wording on the family form, a private note to the coordinator. A
+  follow-up wired the note into the database; the form had collected it
+  without sending it.
+- On the 2026-10-21 call David and Alex locked the contact fields: first
+  name, email and/or phone, who referred them. A single checkbox, "I am not
+  the parent or guardian of this household", replaces the
+  who-is-filling-this-in choice, so a therapist or social worker uses the
+  same form. The "Alpha/Beta" private reference is gone from the form.
+- Story consent is now opt-in: "Yes, I'm okay with sharing my story on the
+  donor page", unticked by default. The consent was kept on purpose.
+- **Say it back:** decide the fields once, write them down, and stop
+  reacting to each new screen. The form, the database and CLAUDE.md now
+  say the same four things.
+
 ## Rebalancing into Alex's repos later
 
 Stories normally live in `Alexleop33/secret-santa-product` and PRs close

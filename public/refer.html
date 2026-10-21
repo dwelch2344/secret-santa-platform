@@ -34,8 +34,8 @@
         </section>
 
         <section class="card">
-          <h2><span class="muted">2</span> The story (Public)</h2>
-          <p class="muted small">This will be shown to the potential donors</p>
+          <h2><span class="muted">2</span> The story</h2>
+          <p class="muted small">Shown to donors only if you say yes in step 6.</p>
           <label class="field">
             <span>What should a donor know?</span>
             <textarea name="story" maxlength="1500" placeholder="Describe in a few sentences the hardships you're facing and why you need help"></textarea>
@@ -63,18 +63,14 @@
         </section>
 
         <section class="card">
-          <h2><span class="muted">5</span> Contact information</h2>
-          <p class="muted small">How the coordinator can contact you</p>
-          <p class="field-label">Who is filling out this form?</p>
-          <label class="check"><input type="radio" name="contact_is" value="household" checked /> <span>I am filling out this form.</span></label>
-          <label class="check"><input type="radio" name="contact_is" value="submitter" /> <span>I have permission to submit this form out for someone else.</span></label>
+          <h2><span class="muted">5</span> Contact information (Private)</h2>
+          <p class="muted small">How the coordinator can reach you. Only the coordinator sees this — never donors, never the public list.</p>
 
-          <div id="filler-name-row">
-            <label class="field">
-              <span>Household contact name</span>
-              <input type="text" name="filler_first_name" maxlength="40" placeholder="e.g. Jamie" />
-            </label>
-          </div>
+          <label class="field">
+            <span>Your first name</span>
+            <input type="text" name="first_name" maxlength="40" placeholder="e.g. Jamie" />
+            <span class="hint">First name only. No last names.</span>
+          </label>
 
           <div class="form-row">
             <label class="field">
@@ -86,25 +82,28 @@
               <input type="tel" name="phone" maxlength="40" placeholder="(555) 010-0000" />
             </label>
           </div>
+          <p class="hint">Give one or both.</p>
           <div id="primary-row" class="hidden">
             <p class="field-label">Which should the coordinator try first?</p>
             <label class="check"><input type="radio" name="primary_channel" value="email" checked /> <span>Email</span></label>
             <label class="check"><input type="radio" name="primary_channel" value="phone" /> <span>Phone</span></label>
           </div>
 
-          <div id="label-row" class="hidden">
-            <p class="field-label">The person who is filling out this form</p>
-            <label class="field">
-              <input type="text" name="submitter_first_name" maxlength="40" placeholder="e.g. Jamie" />
-            </label>
-          </div>
+          <label class="field">
+            <span>Who referred you? <span class="muted">(optional)</span></span>
+            <input type="text" name="referral_source" maxlength="120" placeholder="e.g. school counselor, family services, a friend" />
+            <span class="hint">An organization or a role is enough.</span>
+          </label>
+
+          <label class="check"><input type="checkbox" name="not_guardian" /> <span>I am not the parent or guardian of this household <span class="muted">(for example, a therapist, social worker or other coordinator filling this in for them)</span>.</span></label>
+          <div class="notice notice-amber small hidden" data-warning-for="contact"></div>
           <div class="notice notice-red small hidden" id="contact-error"></div>
         </section>
 
         <section class="card">
           <h2><span class="muted">6</span> Consent</h2>
-          <label class="check"><input type="checkbox" name="consent_wish_list" required /> <span>An adult in this household agrees that the wish list and the one-line description can be shown to donors.</span></label>
-          <label class="check"><input type="checkbox" name="consent_story" checked /> <span>Show the story to donors. <span class="muted">It is what makes a household easy to choose. Untick to keep it for the coordinator only.</span></span></label>
+          <label class="check"><input type="checkbox" name="consent_wish_list" required /> <span>The household agrees that the wish list and the one-line description can be shown to donors.</span></label>
+          <label class="check"><input type="checkbox" name="consent_story" /> <span>Yes, I'm okay with sharing my story on the donor page. <span class="muted">Leave unticked and only the coordinator reads it.</span></span></label>
           <p class="muted small">No photos are collected, now or later.</p>
         </section>
 
