@@ -88,7 +88,8 @@ createButton.onclick = async () => {
 
   // The function refuses anyone but the admin; the page does not pre-check.
   const maxUses = Math.min(1000, Math.max(1, Number(document.getElementById("max-uses").value) || 1));
-  const { data, error } = await supabase.rpc("create_referral_link", { p_max_uses: maxUses });
+  const expiresDays = Math.min(90, Math.max(1, Number(document.getElementById("expires-days").value) || 7));
+  const { data, error } = await supabase.rpc("create_referral_link", { p_max_uses: maxUses, p_expires_days: expiresDays });
 
   createButton.disabled = false;
   if (error) {

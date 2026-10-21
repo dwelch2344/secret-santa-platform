@@ -28,24 +28,34 @@
           <label class="field">
             <span>One line that describes the household</span>
             <input type="text" name="summary" maxlength="120" required placeholder="e.g. Household of 4 — mom & three kids, ages 3–9" />
-            <span class="hint">No names. Sponsors see this line first.</span>
+            <span class="hint">No names. Donors see this line first.</span>
           </label>
           <div class="notice notice-amber small hidden" data-warning-for="summary"></div>
         </section>
 
         <section class="card">
-          <h2><span class="muted">2</span> The story <span class="small muted">— this will be shown to sponsors</span></h2>
+          <h2><span class="muted">2</span> The story (Public)</h2>
+          <p class="muted small">This will be shown to the potential donors</p>
           <label class="field">
-            <span>What should a sponsor know?</span>
-            <textarea name="story" maxlength="1500" placeholder="A few sentences in the household's own words. What changed this year, and what would help most."></textarea>
-            <span class="hint">Leave out last names, the children's school, and street names — anything that could identify the household. The coordinator reads this before anyone else does, and step 5 lets you keep it from sponsors.</span>
+            <span>What should a donor know?</span>
+            <textarea name="story" maxlength="1500" placeholder="Describe in a few sentences the hardships you're facing and why you need help"></textarea>
+            <span class="hint">Leave out last names, the children's school, and street names — anything that could identify the household.</span>
           </label>
           <div class="notice notice-amber small hidden" data-warning-for="story"></div>
         </section>
 
         <section class="card">
-          <h2><span class="muted">3</span> Who is in the household</h2>
-          <p class="muted small">One block per person. Sizes matter more than brands.</p>
+          <h2><span class="muted">3</span> Note to coordinator (Private)</h2>
+          <p class="muted small">This will only be shown to the coordinator</p>
+          <label class="field">
+            <span>Anything else the coordinator should know?</span>
+            <textarea name="coordinator_note" maxlength="1500" placeholder="Optional — only the coordinator will see this."></textarea>
+          </label>
+        </section>
+
+        <section class="card">
+          <h2><span class="muted">4</span> Who is in the household</h2>
+          <p class="muted small">One block per person. Make sure size information is correct.</p>
           <div id="members" class="stack"></div>
           <div class="form-actions">
             <button type="button" class="btn btn-outline" id="add-member">Add another person</button>
@@ -53,10 +63,18 @@
         </section>
 
         <section class="card">
-          <h2><span class="muted">4</span> How the coordinator reaches you</h2>
-          <p class="field-label">Who is filling this in?</p>
-          <label class="check"><input type="radio" name="contact_is" value="household" checked /> <span>This is my own household. The details below are ours.</span></label>
-          <label class="check"><input type="radio" name="contact_is" value="submitter" /> <span>I'm filling this in on behalf of a household. The details below are <strong>mine</strong>, not theirs.</span></label>
+          <h2><span class="muted">5</span> Contact information</h2>
+          <p class="muted small">How the coordinator can contact you</p>
+          <p class="field-label">Who is filling out this form?</p>
+          <label class="check"><input type="radio" name="contact_is" value="household" checked /> <span>I am filling out this form.</span></label>
+          <label class="check"><input type="radio" name="contact_is" value="submitter" /> <span>I have permission to submit this form out for someone else.</span></label>
+
+          <div id="filler-name-row">
+            <label class="field">
+              <span>Household contact name</span>
+              <input type="text" name="filler_first_name" maxlength="40" placeholder="e.g. Jamie" />
+            </label>
+          </div>
 
           <div class="form-row">
             <label class="field">
@@ -68,8 +86,6 @@
               <input type="tel" name="phone" maxlength="40" placeholder="(555) 010-0000" />
             </label>
           </div>
-          <p class="hint">Give one or both. Only the coordinator can see these — never sponsors, never the public list.</p>
-
           <div id="primary-row" class="hidden">
             <p class="field-label">Which should the coordinator try first?</p>
             <label class="check"><input type="radio" name="primary_channel" value="email" checked /> <span>Email</span></label>
@@ -77,20 +93,18 @@
           </div>
 
           <div id="label-row" class="hidden">
+            <p class="field-label">The person who is filling out this form</p>
             <label class="field">
-              <span>Your own reference for this household <span class="muted">(optional)</span></span>
-              <input type="text" name="submitter_label" maxlength="40" placeholder="e.g. Alpha, Beta, Family 3" />
-              <span class="hint"><strong>Not their name.</strong> A label only you understand, so you can tell your referrals apart. No names, initials, addresses, phone numbers or anything that identifies them. The coordinator sees it; sponsors never do.</span>
+              <input type="text" name="submitter_first_name" maxlength="40" placeholder="e.g. Jamie" />
             </label>
-            <div class="notice notice-amber small hidden" data-warning-for="label"></div>
           </div>
           <div class="notice notice-red small hidden" id="contact-error"></div>
         </section>
 
         <section class="card">
-          <h2><span class="muted">5</span> Consent</h2>
-          <label class="check"><input type="checkbox" name="consent_wish_list" required /> <span>An adult in this household agrees that the wish list and the one-line description can be shown to sponsors.</span></label>
-          <label class="check"><input type="checkbox" name="consent_story" checked /> <span>Show the story to sponsors. <span class="muted">It is what makes a household easy to sponsor. Untick to keep it for the coordinator only.</span></span></label>
+          <h2><span class="muted">6</span> Consent</h2>
+          <label class="check"><input type="checkbox" name="consent_wish_list" required /> <span>An adult in this household agrees that the wish list and the one-line description can be shown to donors.</span></label>
+          <label class="check"><input type="checkbox" name="consent_story" checked /> <span>Show the story to donors. <span class="muted">It is what makes a household easy to choose. Untick to keep it for the coordinator only.</span></span></label>
           <p class="muted small">No photos are collected, now or later.</p>
         </section>
 

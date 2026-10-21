@@ -28,9 +28,10 @@
         <main class="console-content stack" id="links-root">
           <section class="card">
             <h2>Create a referral link</h2>
-            <p class="muted">A link opens the referral form and lasts seven days from now. Send it to a family directly, or to a provider who will pass it on. Nothing about a family is recorded until they submit.</p>
+            <p class="muted">A link opens the referral form for as long as you choose below. Send it to a family directly, or to a provider who will pass it on. Nothing about a family is recorded until they submit.</p>
             <div class="form-actions">
               <label class="field uses-field"><span>How many households may use it?</span><input type="number" id="max-uses" min="1" max="1000" value="1" /></label>
+              <label class="field uses-field"><span>How many days should it stay open?</span><input type="number" id="expires-days" min="1" max="90" value="7" /></label>
               <button type="button" class="btn btn-green" id="create-link">Create a new link</button>
               <span class="status-line" id="create-status"></span>
             </div>
