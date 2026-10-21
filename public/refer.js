@@ -178,6 +178,9 @@ function readForm() {
     email,
     phone,
     primary_channel: email && phone ? form.elements.primary_channel.value : email ? "email" : "phone",
+    coordinator_note: form.elements.coordinator_note.value.trim(),
+    household_first_name: form.elements.filler_first_name.value.trim(),
+    submitter_first_name: onBehalf ? form.elements.submitter_first_name.value.trim() : "",
     members: readMembers(),
   };
 }
@@ -208,7 +211,7 @@ form.onsubmit = async (event) => {
     return;
   }
 
-  const texts = [referral.summary, referral.story, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
+  const texts = [referral.summary, referral.story, referral.coordinator_note, referral.household_first_name, referral.submitter_first_name, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
   const blocking = texts.flatMap((text) => problemsIn(text).blocking);
   if (blocking.length) {
     showSubmitError(`Please take out ${[...new Set(blocking)].join(" and ")} before submitting. The coordinator reaches you through step 4.`);
