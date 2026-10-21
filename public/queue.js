@@ -41,14 +41,15 @@ function contactOf(household) {
 // channels, and which to try first. Never shown to anyone but the admin.
 function describeContact(contact) {
   if (!contact) return "";
-  const whose = contact.contact_is === "submitter"
-    ? `the person who submitted on their behalf${contact.submitter_first_name ? ` (${contact.submitter_first_name})` : ""}`
-    : `the household itself${contact.household_first_name ? ` (${contact.household_first_name})` : ""}`;
+  const who = contact.household_first_name ? `${contact.household_first_name}, ` : "";
+  const role = contact.contact_is === "submitter"
+    ? "not the parent or guardian (a coordinator acting for the household)"
+    : "the parent or guardian";
   const channels = [];
   if (contact.email) channels.push(`email ${contact.email}`);
   if (contact.phone) channels.push(`phone ${contact.phone}`);
   const prefer = contact.email && contact.phone ? ` (${contact.primary_channel} first)` : "";
-  return `Reach ${whose}: ${channels.join(", ")}${prefer}.`;
+  return `Reach ${who}${role}: ${channels.join(", ")}${prefer}.`;
 }
 
 function reachableAt(contact) {
@@ -189,8 +190,8 @@ function renderDetail(household) {
   privateCard.appendChild(
     el("p", null, contact ? `${describeContact(contact)} Never shown to sponsors.` : "No contact on file (it is deleted on rejection)."),
   );
-  if (contact?.contact_is === "submitter" && contact.household_first_name) {
-    privateCard.appendChild(el("p", "muted small", `Household contact name: ${contact.household_first_name}.`));
+  if (contact?.referral_source) {
+    privateCard.appendChild(el("p", "muted small", `Referred by: ${contact.referral_source}.`));
   }
   if (household.family_note) {
     privateCard.appendChild(el("p", "eyebrow", "Note to the coordinator"));
@@ -338,7 +339,7 @@ async function load() {
     .select(
       "id, ref_code, summary, story, status, referred_on, consent_wish_list, consent_story, admin_note, submitter_label, family_note, " +
         "household_members ( id, position, role, age, clothing_size, shoe_size, wish_items ( id, kind, label, position ) ), " +
-        "household_contacts ( email, phone, primary_channel, contact_is, household_first_name, submitter_first_name )",
+        "household_contacts ( email, phone, primary_channel, contact_is, household_first_name, submitter_first_name, referral_source )",
     )
     .order("referred_on", { ascending: true });
 

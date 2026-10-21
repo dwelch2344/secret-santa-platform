@@ -27,7 +27,6 @@ const submitStatus = document.getElementById("submit-status");
 const submitError = document.getElementById("submit-error");
 const contactError = document.getElementById("contact-error");
 const primaryRow = document.getElementById("primary-row");
-const labelRow = document.getElementById("label-row");
 const done = document.getElementById("done");
 
 let campaign = null;
@@ -94,8 +93,6 @@ function watchField(input, warningTarget) {
 // ---------- Contact: who, and how ----------
 
 function syncContact() {
-  const onBehalf = form.elements.contact_is.value === "submitter";
-  labelRow.classList.toggle("hidden", !onBehalf);
   const both = form.elements.email.value.trim() && form.elements.phone.value.trim();
   primaryRow.classList.toggle("hidden", !both);
   contactError.classList.add("hidden");
@@ -166,7 +163,6 @@ function readMembers() {
 // ---------- Submit ----------
 
 function readForm() {
-  const onBehalf = form.elements.contact_is.value === "submitter";
   const email = form.elements.email.value.trim();
   const phone = form.elements.phone.value.trim();
   return {
@@ -174,13 +170,13 @@ function readForm() {
     story: form.elements.story.value.trim(),
     consent_wish_list: form.elements.consent_wish_list.checked,
     consent_story: form.elements.consent_story.checked,
-    contact_is: onBehalf ? "submitter" : "household",
+    first_name: form.elements.first_name.value.trim(),
     email,
     phone,
     primary_channel: email && phone ? form.elements.primary_channel.value : email ? "email" : "phone",
+    referral_source: form.elements.referral_source.value.trim(),
+    not_guardian: form.elements.not_guardian.checked,
     coordinator_note: form.elements.coordinator_note.value.trim(),
-    household_first_name: form.elements.filler_first_name.value.trim(),
-    submitter_first_name: onBehalf ? form.elements.submitter_first_name.value.trim() : "",
     members: readMembers(),
   };
 }
@@ -211,7 +207,7 @@ form.onsubmit = async (event) => {
     return;
   }
 
-  const texts = [referral.summary, referral.story, referral.coordinator_note, referral.household_first_name, referral.submitter_first_name, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
+  const texts = [referral.summary, referral.story, referral.coordinator_note, referral.first_name, referral.referral_source, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
   const blocking = texts.flatMap((text) => problemsIn(text).blocking);
   if (blocking.length) {
     showSubmitError(`Please take out ${[...new Set(blocking)].join(" and ")} before submitting. The coordinator reaches you through step 4.`);
@@ -257,7 +253,7 @@ function showDone(refCode, referral) {
     ? `If anything needs changing, email the coordinator at ${campaign.contact_email} and quote ${refCode}.`
     : `If anything needs changing, contact the coordinator and quote ${refCode}.`;
   done.appendChild(next);
-  if (referral.contact_is === "submitter") {
+  if (referral.not_guardian) {
     const again = document.createElement("p");
     again.textContent = "Referring another household? Open the same link again if it allows more uses; the link page will say if it has been used up.";
     done.appendChild(again);
@@ -302,7 +298,6 @@ async function start() {
 
   watchField(form.elements.summary, form.querySelector('[data-warning-for="summary"]'));
   watchField(form.elements.story, form.querySelector('[data-warning-for="story"]'));
-  for (const radio of form.elements.contact_is) radio.addEventListener("change", syncContact);
   form.elements.email.addEventListener("input", syncContact);
   form.elements.phone.addEventListener("input", syncContact);
   document.getElementById("add-member").onclick = addMember;

@@ -41,16 +41,17 @@ URLs, not in query strings, not in logs, not in error messages, not in a CSV
 export. Households are a reference code (`#14`) and a story. **No photos,
 ever** (see the product repo's decisions.md for why).
 
-**One narrow exception: contact details.** A household's own email, phone
-number and contact first name (or those of the person who referred them) may
-be stored, and only in the admin-only `household_contacts` table. First names
-were added on 2026-10-21 at David's decision, with Alex working through it
-with stakeholders; never a surname, never in the summary, story or wish list. They are deleted on rejection, on
-withdrawal, and by the season-end purge; never shown to sponsors, never in a
-view, a URL, a log line, an error message or a CSV export. Phone numbers were
-added on 2026-10-20 at David's decision, superseding the 2026-10-10 "email
-only" entry in the product repo's decisions.md. Free text is still refused
-if it contains a phone number, email or street address.
+**One narrow exception: contact details.** Locked with Alex on 2026-10-21:
+the person filling in the form gives a **first name, email and/or phone,
+and who referred them**, nothing else. They are stored only in the
+admin-only `household_contacts` table, deleted on rejection, on withdrawal
+and by the season-end purge; never shown to donors, never in a view, a URL,
+a log line, an error message or a CSV export. A checkbox records whether
+that person is not the parent or guardian (a therapist, social worker or
+other coordinator acting for the household). No last names, no children's
+names, no addresses. Free text is still refused if it contains a phone
+number, email or street address. This supersedes the product repo's
+2026-10-10 "email only" entry.
 
 Caseworker and donor **emails** are fine — needed for login.
 
