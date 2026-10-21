@@ -36,10 +36,19 @@ defeats the entire purpose of the exercise. Sequence, not fan-out.
 
 ## Hard rule: no family PII, anywhere
 
-No names, addresses, or phone numbers for referred households — not in the
-database, not in URLs, not in query strings, not in logs, not in error
-messages, not in a CSV export. Households are a reference code (`#14`) and a
-story. **No photos, ever** (see the product repo's decisions.md for why).
+No names or addresses for referred households — not in the database, not in
+URLs, not in query strings, not in logs, not in error messages, not in a CSV
+export. Households are a reference code (`#14`) and a story. **No photos,
+ever** (see the product repo's decisions.md for why).
+
+**One narrow exception: contact details.** A household's own email and phone
+number (or those of the person who referred them) may be stored, and only in
+the admin-only `household_contacts` table. They are deleted on rejection, on
+withdrawal, and by the season-end purge; never shown to sponsors, never in a
+view, a URL, a log line, an error message or a CSV export. Phone numbers were
+added on 2026-10-20 at David's decision, superseding the 2026-10-10 "email
+only" entry in the product repo's decisions.md. Free text is still refused
+if it contains a phone number, email or street address.
 
 Caseworker and donor **emails** are fine — needed for login.
 
