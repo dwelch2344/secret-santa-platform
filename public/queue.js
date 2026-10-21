@@ -34,7 +34,24 @@ function personLabel(member) {
 
 function contactOf(household) {
   const contact = household.household_contacts;
-  return (Array.isArray(contact) ? contact[0] : contact)?.email ?? "";
+  return (Array.isArray(contact) ? contact[0] : contact) ?? null;
+}
+
+// "the household's own email, 555-0100 (phone first)" — who, which
+// channels, and which to try first. Never shown to anyone but the admin.
+function describeContact(contact) {
+  if (!contact) return "";
+  const whose = contact.contact_is === "submitter" ? "the person who submitted on their behalf" : "the household itself";
+  const channels = [];
+  if (contact.email) channels.push(`email ${contact.email}`);
+  if (contact.phone) channels.push(`phone ${contact.phone}`);
+  const prefer = contact.email && contact.phone ? ` (${contact.primary_channel} first)` : "";
+  return `Reach ${whose}: ${channels.join(", ")}${prefer}.`;
+}
+
+function reachableAt(contact) {
+  if (!contact) return "";
+  return contact.primary_channel === "phone" && contact.phone ? contact.phone : (contact.email || contact.phone || "");
 }
 
 function formatDate(value) {
@@ -86,6 +103,9 @@ function checksFor(household) {
   const text = `${household.summary}\n${household.story}`;
   for (const [pattern, level, message] of PATTERNS) {
     if (pattern.test(text)) checks.push([level, message]);
+  }
+  if (household.submitter_label && /^[A-Z][a-z]+(\s+[A-Z]\.?|\s+[A-Z][a-z]+)+$/.test(household.submitter_label)) {
+    checks.push(["warn", `The submitter's reference "${household.submitter_label}" reads like a person's name. Ask them to use something that does not identify the household.`]);
   }
   return checks;
 }
@@ -158,13 +178,18 @@ function renderDetail(household) {
   if (!members.length) people.appendChild(el("p", "muted", "No people recorded."));
   publicCard.appendChild(people);
 
-  // Private: the contact email, there for the admin and nobody else.
-  const email = contactOf(household);
+  // Private: the contact and the submitter's reference, there for the
+  // admin and nobody else.
+  const contact = contactOf(household);
+  const email = reachableAt(contact);
   const privateCard = el("div", "card card-tinted");
   privateCard.appendChild(el("p", "eyebrow", "Private · the coordinator only"));
   privateCard.appendChild(
-    el("p", null, email ? `The family can be reached at ${email}. Never shown to sponsors.` : "No contact email on file (it is deleted on rejection)."),
+    el("p", null, contact ? `${describeContact(contact)} Never shown to sponsors.` : "No contact on file (it is deleted on rejection)."),
   );
+  if (household.submitter_label) {
+    privateCard.appendChild(el("p", "muted small", `The submitter's own reference for this household: "${household.submitter_label}".`));
+  }
 
   // Checks.
   const checksCard = el("div", "card");
@@ -217,7 +242,7 @@ function renderDetail(household) {
     // emailing the family herself.
     decideCard.appendChild(
       el("p", "notice notice-amber small", email
-        ? `Request changes is still in work. For now, email the family at ${email} and ask for the fix; a resubmission needs a new link.`
+        ? `Request changes is still in work. For now, reach them at ${email} and ask for the fix; a resubmission needs a new link.`
         : "Request changes is still in work."),
     );
   } else if (household.status === "live") {
@@ -256,7 +281,7 @@ function pickButton(household) {
   if (household.id === selectedId) button.setAttribute("aria-current", "true");
   const top = el("span", "pick-top");
   top.append(el("span", "ref", household.ref_code), el("span", "meta", formatDate(household.referred_on)));
-  button.append(top, el("span", "pick-summary", household.summary));
+  button.append(top, el("span", "pick-summary", household.submitter_label ? `${household.summary} · ref "${household.submitter_label}"` : household.summary));
   button.onclick = () => select(household.id);
   item.appendChild(button);
   return item;
@@ -302,9 +327,9 @@ async function load() {
   const { data, error } = await supabase
     .from("households")
     .select(
-      "id, ref_code, summary, story, status, referred_on, consent_wish_list, consent_story, admin_note, " +
+      "id, ref_code, summary, story, status, referred_on, consent_wish_list, consent_story, admin_note, submitter_label, " +
         "household_members ( id, position, role, age, clothing_size, shoe_size, wish_items ( id, kind, label, position ) ), " +
-        "household_contacts ( email )",
+        "household_contacts ( email, phone, primary_channel, contact_is )",
     )
     .order("referred_on", { ascending: true });
 

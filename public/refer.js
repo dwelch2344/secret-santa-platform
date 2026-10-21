@@ -1,4 +1,5 @@
-// The referral form, filled in by the family. One sitting, one submit.
+// The referral form, filled in by the household or by someone on their
+// behalf. One sitting, one submit.
 //
 // This page does not import auth.js: nobody signs in here, and auth.js
 // rewrites the address bar on load, which would wipe the link's token out
@@ -24,6 +25,9 @@ const memberTemplate = document.getElementById("member-template");
 const submitButton = document.getElementById("submit");
 const submitStatus = document.getElementById("submit-status");
 const submitError = document.getElementById("submit-error");
+const contactError = document.getElementById("contact-error");
+const primaryRow = document.getElementById("primary-row");
+const labelRow = document.getElementById("label-row");
 const done = document.getElementById("done");
 
 let campaign = null;
@@ -49,9 +53,10 @@ function showLinkMessage(title, body) {
 
 // ---------- The text guard, client side ----------
 //
-// The same three patterns the database refuses, so the family hears about
-// it while typing instead of on submit. Plus one the database leaves to a
-// human: a school name. That one only warns.
+// The same three patterns the database refuses, so the person hears about
+// it while typing instead of on submit. Plus two the database leaves to a
+// human: a school name in the story, and a reference that reads like a
+// name. Those only warn.
 
 const BLOCKING = [
   [/\d{3}[-.\s)]*\d{3}[-.\s]*\d{4}/, "a phone number"],
@@ -59,6 +64,7 @@ const BLOCKING = [
   [/\d+\s+[a-z]+\s+(st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|ct|court|way|pl|place|cir|circle)\b/i, "a street address"],
 ];
 const SCHOOL = /\b(school|elementary|academy|kindergarten|preschool|high school|middle school)\b/i;
+const LOOKS_LIKE_A_NAME = /^[A-Z][a-z]+(\s+[A-Z]\.?|\s+[A-Z][a-z]+)+$/;
 
 function problemsIn(text) {
   const blocking = BLOCKING.filter(([pattern]) => pattern.test(text)).map(([, label]) => label);
@@ -69,7 +75,7 @@ function problemsIn(text) {
 function updateWarning(target, text) {
   const { blocking, warning } = problemsIn(text);
   if (blocking.length) {
-    target.textContent = `This looks like it contains ${blocking.join(" and ")}. Please take it out — the coordinator reaches you by email instead.`;
+    target.textContent = `This looks like it contains ${blocking.join(" and ")}. Please take it out — the coordinator reaches you through step 4 instead.`;
     target.classList.remove("hidden");
     return true;
   }
@@ -82,8 +88,46 @@ function updateWarning(target, text) {
   return false;
 }
 
+function updateLabelWarning() {
+  const target = form.querySelector('[data-warning-for="label"]');
+  const value = form.elements.submitter_label.value.trim();
+  const { blocking } = problemsIn(value);
+  if (blocking.length) {
+    target.textContent = `This looks like it contains ${blocking.join(" and ")}. A reference must not identify the household.`;
+    target.classList.remove("hidden");
+    return;
+  }
+  if (LOOKS_LIKE_A_NAME.test(value)) {
+    target.textContent = "This reads like a person's name. Use something only you understand instead — Alpha, Beta, Family 3.";
+    target.classList.remove("hidden");
+    return;
+  }
+  target.classList.add("hidden");
+}
+
 function watchField(input, warningTarget) {
   input.addEventListener("input", () => updateWarning(warningTarget, input.value));
+}
+
+// ---------- Contact: who, and how ----------
+
+function syncContact() {
+  const onBehalf = form.elements.contact_is.value === "submitter";
+  labelRow.classList.toggle("hidden", !onBehalf);
+  const both = form.elements.email.value.trim() && form.elements.phone.value.trim();
+  primaryRow.classList.toggle("hidden", !both);
+  contactError.classList.add("hidden");
+}
+
+function phoneDigits(value) {
+  return value.replace(/\D/g, "").length;
+}
+
+function contactProblem(referral) {
+  if (!referral.email && !referral.phone) return "Give an email address or a phone number the coordinator can reach you at.";
+  if (referral.email && !/^[^@\s]+@[^@\s]+$/.test(referral.email)) return "That email address does not look right.";
+  if (referral.phone && (phoneDigits(referral.phone) < 7 || phoneDigits(referral.phone) > 15)) return "That phone number does not look right.";
+  return null;
 }
 
 // ---------- People ----------
@@ -140,12 +184,19 @@ function readMembers() {
 // ---------- Submit ----------
 
 function readForm() {
+  const onBehalf = form.elements.contact_is.value === "submitter";
+  const email = form.elements.email.value.trim();
+  const phone = form.elements.phone.value.trim();
   return {
     summary: form.elements.summary.value.trim(),
     story: form.elements.story.value.trim(),
-    email: form.elements.email.value.trim(),
     consent_wish_list: form.elements.consent_wish_list.checked,
     consent_story: form.elements.consent_story.checked,
+    contact_is: onBehalf ? "submitter" : "household",
+    email,
+    phone,
+    primary_channel: email && phone ? form.elements.primary_channel.value : email ? "email" : "phone",
+    submitter_label: onBehalf ? form.elements.submitter_label.value.trim() : "",
     members: readMembers(),
   };
 }
@@ -159,18 +210,27 @@ function showSubmitError(message) {
 form.onsubmit = async (event) => {
   event.preventDefault();
   submitError.classList.add("hidden");
+  contactError.classList.add("hidden");
 
-  // The browser's own required/maxlength checks first.
   if (!form.checkValidity()) {
     form.reportValidity();
     return;
   }
 
   const referral = readForm();
-  const texts = [referral.summary, referral.story, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
+
+  const problem = contactProblem(referral);
+  if (problem) {
+    contactError.textContent = problem;
+    contactError.classList.remove("hidden");
+    contactError.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  const texts = [referral.summary, referral.story, referral.submitter_label, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
   const blocking = texts.flatMap((text) => problemsIn(text).blocking);
   if (blocking.length) {
-    showSubmitError(`Please take out ${[...new Set(blocking)].join(" and ")} before submitting. The coordinator reaches you by email.`);
+    showSubmitError(`Please take out ${[...new Set(blocking)].join(" and ")} before submitting. The coordinator reaches you through step 4.`);
     return;
   }
 
@@ -178,7 +238,7 @@ form.onsubmit = async (event) => {
   submitStatus.textContent = "Submitting…";
 
   // The database does every check again and either writes everything or
-  // nothing. Its message is written for the family, so it is shown as is.
+  // nothing. Its message is written for the person, so it is shown as is.
   const { data, error } = await supabase.rpc("submit_referral", {
     p_token: token,
     p_referral: referral,
@@ -192,10 +252,10 @@ form.onsubmit = async (event) => {
     return;
   }
 
-  showDone(data);
+  showDone(data, referral);
 };
 
-function showDone(refCode) {
+function showDone(refCode, referral) {
   form.classList.add("hidden");
   ruleLine.classList.add("hidden");
   done.innerHTML = "";
@@ -203,15 +263,27 @@ function showDone(refCode) {
   eyebrow.className = "eyebrow";
   eyebrow.textContent = "Submitted";
   const heading = document.createElement("h2");
-  heading.textContent = `Your referral is ${refCode}`;
+  heading.textContent = `The referral is ${refCode}`;
   const body = document.createElement("p");
-  body.textContent = "The coordinator reviews every referral before it appears to sponsors, usually within a couple of days. Nothing is public yet. Write the number down — it is how the coordinator will refer to your household, and it is the only handle sponsors ever see.";
+  body.textContent = "The coordinator reviews every referral before it appears to sponsors, usually within a couple of days. Nothing is public yet. Write the number down — it is how the coordinator will refer to this household, and it is the only handle sponsors ever see.";
+  done.append(eyebrow, heading, body);
+  if (referral.submitter_label) {
+    const label = document.createElement("p");
+    label.className = "muted";
+    label.textContent = `Your reference for it: ${referral.submitter_label}.`;
+    done.appendChild(label);
+  }
   const next = document.createElement("p");
   next.className = "muted";
   next.textContent = campaign?.contact_email
     ? `If anything needs changing, email the coordinator at ${campaign.contact_email} and quote ${refCode}.`
     : `If anything needs changing, contact the coordinator and quote ${refCode}.`;
-  done.append(eyebrow, heading, body, next);
+  done.appendChild(next);
+  if (referral.contact_is === "submitter") {
+    const again = document.createElement("p");
+    again.textContent = "Referring another household? Open the same link again if it allows more uses; the link page will say if it has been used up.";
+    done.appendChild(again);
+  }
   done.classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -238,7 +310,7 @@ async function start() {
   }
 
   if (status === "used") {
-    showLinkMessage("This link has already been used", "A referral was already submitted through it. You did nothing wrong — each link works once.");
+    showLinkMessage("This link has been used up", "It has been used as many times as it allows. Nobody did anything wrong — ask the coordinator for a new one.");
     return;
   }
   if (status === "expired") {
@@ -252,8 +324,13 @@ async function start() {
 
   watchField(form.elements.summary, form.querySelector('[data-warning-for="summary"]'));
   watchField(form.elements.story, form.querySelector('[data-warning-for="story"]'));
+  form.elements.submitter_label.addEventListener("input", updateLabelWarning);
+  for (const radio of form.elements.contact_is) radio.addEventListener("change", syncContact);
+  form.elements.email.addEventListener("input", syncContact);
+  form.elements.phone.addEventListener("input", syncContact);
   document.getElementById("add-member").onclick = addMember;
   addMember();
+  syncContact();
   form.classList.remove("hidden");
 }
 

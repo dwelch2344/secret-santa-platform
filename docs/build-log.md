@@ -317,6 +317,24 @@ own words, you understand the slice.
   first sign-in is the only thing that can create the first admin; every
   admin after that is created by an admin.
 
+### 21. Multi-use links, email or phone, and a private reference — issue #69
+
+- A referral link now carries a limit (1–1000) and a use count; `used_at`
+  means exhausted. Households remember which link they came through, so
+  the links page lists every referral a link produced.
+- The contact is an email, a phone, or both, with a preferred channel, and
+  it belongs either to the household or to the person submitting on their
+  behalf. A household's own phone number is new and changes the 2026-10-10
+  "email only" decision at David's instruction; it lives in the same
+  private table, admin-only, deleted on rejection.
+- On-behalf submissions may carry a private reference ("Alpha"). The form
+  warns when it reads like a name; the queue flags it again.
+- The story section says it will be shown to sponsors; the consent starts
+  ticked and unticking keeps it for the coordinator.
+- **Say it back:** a link is now a counter, not a switch. Every refusal
+  (bad phone, no contact, identifying text) leaves the counter alone, so
+  a mistake never costs a family their place.
+
 ## Rebalancing into Alex's repos later
 
 Stories normally live in `Alexleop33/secret-santa-product` and PRs close

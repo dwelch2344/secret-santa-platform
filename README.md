@@ -135,11 +135,11 @@ Everything hangs off `campaigns` — no `organizations` table above it.
 | Table | Holds | Who reads it |
 |---|---|---|
 | `campaigns` | name, year, the four dates, rules, drop-off details, status | public columns through `public_campaign`; the admin reads the table; donors get drop-off details through a function once they hold a claim |
-| `households` | ref code, one-line summary, story, consents, status, the admin's private note | the admin; the public through `public_households` (live, unclaimed, open drive; story only with consent) |
+| `households` | ref code, one-line summary, story, consents, status, the admin's private note, an on-behalf submitter's private reference | the admin; the public through `public_households` (live, unclaimed, open drive; story only with consent) |
 | `household_members` | role from a fixed list, age, sizes — **no names** | the admin; the public and claimants through views |
 | `wish_items` | one row per item, need or would-love, bought-at | same |
-| `household_contacts` | the family's email, alone | the admin only; deleted on rejection, withdrawal, and by the purge |
-| `referral_links` | SHA-256 of the token, expiry, used-at, which household it became | the admin |
+| `household_contacts` | email and/or phone, which to try first, and whose they are (the household's own, or the submitter's) | the admin only; deleted on rejection, withdrawal, and by the purge |
+| `referral_links` | SHA-256 of the token, expiry, uses against a limit of up to 1000 | the admin; households remember which link they came through |
 | `claims` | household, donor (or an offline label), status, timestamps | the admin through `claims_with_sponsor`; a donor's own through `my_claims` |
 | `profiles` | role: `admin` or `donor` | each account reads its own row; admins add and remove admins through functions, never the last one |
 | `admin_invites` | lower-cased email, who invited, used-at | the admin; a pending invite promotes the matching account on its first sign-in. The first admin is seeded this way by a migration, so no SQL is ever run by hand |

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sub for Santa — Refer your household</title>
+    <title>Sub for Santa — Refer a household</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -24,9 +24,9 @@
 
       <form id="refer-form" class="stack hidden" novalidate>
         <section class="card">
-          <h2><span class="muted">1</span> About your household</h2>
+          <h2><span class="muted">1</span> About the household</h2>
           <label class="field">
-            <span>One line that describes your household</span>
+            <span>One line that describes the household</span>
             <input type="text" name="summary" maxlength="120" required placeholder="e.g. Household of 4 — mom & three kids, ages 3–9" />
             <span class="hint">No names. Sponsors see this line first.</span>
           </label>
@@ -34,11 +34,11 @@
         </section>
 
         <section class="card">
-          <h2><span class="muted">2</span> Your story <span class="small muted">— shown to sponsors only if you tick the box in step 5</span></h2>
+          <h2><span class="muted">2</span> The story <span class="small muted">— this will be shown to sponsors</span></h2>
           <label class="field">
             <span>What should a sponsor know?</span>
-            <textarea name="story" maxlength="1500" placeholder="A few sentences in your own words. What changed this year, and what would help most."></textarea>
-            <span class="hint">Leave out last names, your children's school, and street names — anything that could identify you. The coordinator reads this before anyone else does.</span>
+            <textarea name="story" maxlength="1500" placeholder="A few sentences in the household's own words. What changed this year, and what would help most."></textarea>
+            <span class="hint">Leave out last names, the children's school, and street names — anything that could identify the household. The coordinator reads this before anyone else does, and step 5 lets you keep it from sponsors.</span>
           </label>
           <div class="notice notice-amber small hidden" data-warning-for="story"></div>
         </section>
@@ -54,17 +54,43 @@
 
         <section class="card">
           <h2><span class="muted">4</span> How the coordinator reaches you</h2>
-          <label class="field">
-            <span>Your email address</span>
-            <input type="email" name="email" maxlength="200" required placeholder="you@example.com" />
-            <span class="hint">Only the coordinator can see this. It is never shown to sponsors, never on the public list, and it is how they reach you if something needs fixing. No phone number is asked for.</span>
-          </label>
+          <p class="field-label">Who is filling this in?</p>
+          <label class="check"><input type="radio" name="contact_is" value="household" checked /> <span>This is my own household. The details below are ours.</span></label>
+          <label class="check"><input type="radio" name="contact_is" value="submitter" /> <span>I'm filling this in on behalf of a household. The details below are <strong>mine</strong>, not theirs.</span></label>
+
+          <div class="form-row">
+            <label class="field">
+              <span>Email</span>
+              <input type="email" name="email" maxlength="200" placeholder="you@example.com" />
+            </label>
+            <label class="field">
+              <span>Phone</span>
+              <input type="tel" name="phone" maxlength="40" placeholder="(555) 010-0000" />
+            </label>
+          </div>
+          <p class="hint">Give one or both. Only the coordinator can see these — never sponsors, never the public list.</p>
+
+          <div id="primary-row" class="hidden">
+            <p class="field-label">Which should the coordinator try first?</p>
+            <label class="check"><input type="radio" name="primary_channel" value="email" checked /> <span>Email</span></label>
+            <label class="check"><input type="radio" name="primary_channel" value="phone" /> <span>Phone</span></label>
+          </div>
+
+          <div id="label-row" class="hidden">
+            <label class="field">
+              <span>Your own reference for this household <span class="muted">(optional)</span></span>
+              <input type="text" name="submitter_label" maxlength="40" placeholder="e.g. Alpha, Beta, Family 3" />
+              <span class="hint"><strong>Not their name.</strong> A label only you understand, so you can tell your referrals apart. No names, initials, addresses, phone numbers or anything that identifies them. The coordinator sees it; sponsors never do.</span>
+            </label>
+            <div class="notice notice-amber small hidden" data-warning-for="label"></div>
+          </div>
+          <div class="notice notice-red small hidden" id="contact-error"></div>
         </section>
 
         <section class="card">
           <h2><span class="muted">5</span> Consent</h2>
           <label class="check"><input type="checkbox" name="consent_wish_list" required /> <span>An adult in this household agrees that the wish list and the one-line description can be shown to sponsors.</span></label>
-          <label class="check"><input type="checkbox" name="consent_story" /> <span>The story in step 2 can be shown to sponsors too. <span class="muted">Optional — leave it unticked and only the coordinator reads it.</span></span></label>
+          <label class="check"><input type="checkbox" name="consent_story" checked /> <span>Show the story to sponsors. <span class="muted">It is what makes a household easy to sponsor. Untick to keep it for the coordinator only.</span></span></label>
           <p class="muted small">No photos are collected, now or later.</p>
         </section>
 

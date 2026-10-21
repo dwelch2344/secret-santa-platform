@@ -1290,3 +1290,8 @@ details.section > summary .count {
     grid-template-columns: 1fr;
   }
 }
+
+.uses-field {
+  margin: 0;
+  width: 240px;
+}

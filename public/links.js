@@ -23,7 +23,7 @@ function linkFor(token) {
 }
 
 function stateOf(link) {
-  if (link.used_at) return { label: "Used", pill: "pill-grey" };
+  if (link.uses >= link.max_uses) return { label: "Used up", pill: "pill-grey" };
   if (new Date(link.expires_at) < new Date()) return { label: "Expired", pill: "pill-rejected" };
   return { label: "Usable", pill: "pill-live" };
 }
@@ -41,7 +41,7 @@ function renderList(links) {
   const table = document.createElement("table");
   table.className = "table";
   const head = table.createTHead().insertRow();
-  for (const label of ["Created", "Expires", "State", "Referral"]) {
+  for (const label of ["Created", "Expires", "Uses", "State", "Referrals"]) {
     const cell = document.createElement("th");
     cell.textContent = label;
     head.appendChild(cell);
@@ -51,14 +51,16 @@ function renderList(links) {
     const row = body.insertRow();
     row.insertCell().textContent = new Date(link.created_at).toLocaleString();
     row.insertCell().textContent = new Date(link.expires_at).toLocaleString();
+    row.insertCell().textContent = `${link.uses} of ${link.max_uses}`;
     const state = stateOf(link);
     const pill = document.createElement("span");
     pill.className = `pill ${state.pill}`;
     pill.textContent = state.label;
     row.insertCell().appendChild(pill);
-    // Once a family has used the link, the admin can see which referral it
-    // became — by ref code, the only handle a household ever has.
-    row.insertCell().textContent = link.households?.ref_code ?? "—";
+    // Which referrals came through it — by ref code, the only handle a
+    // household ever has.
+    const codes = (link.households ?? []).map((h) => h.ref_code);
+    row.insertCell().textContent = codes.length ? codes.join(", ") : "—";
   }
   list.appendChild(table);
 }
@@ -66,7 +68,7 @@ function renderList(links) {
 async function loadLinks() {
   const { data, error } = await supabase
     .from("referral_links")
-    .select("id, created_at, expires_at, used_at, households ( ref_code )")
+    .select("id, created_at, expires_at, uses, max_uses, households ( ref_code )")
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -85,7 +87,8 @@ createButton.onclick = async () => {
   createStatus.textContent = "Creating…";
 
   // The function refuses anyone but the admin; the page does not pre-check.
-  const { data, error } = await supabase.rpc("create_referral_link");
+  const maxUses = Math.min(1000, Math.max(1, Number(document.getElementById("max-uses").value) || 1));
+  const { data, error } = await supabase.rpc("create_referral_link", { p_max_uses: maxUses });
 
   createButton.disabled = false;
   if (error) {
@@ -96,7 +99,7 @@ createButton.onclick = async () => {
   const made = Array.isArray(data) ? data[0] : data;
   createStatus.textContent = "";
   newLinkUrl.value = linkFor(made.token);
-  newLinkExpiry.textContent = `Expires ${new Date(made.expires_at).toLocaleString()}.`;
+  newLinkExpiry.textContent = `Expires ${new Date(made.expires_at).toLocaleString()} · ${made.max_uses === 1 ? "one household" : `up to ${made.max_uses} households`}.`;
   newLink.classList.remove("hidden");
   await loadLinks();
 };

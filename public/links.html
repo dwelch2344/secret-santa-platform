@@ -28,11 +28,13 @@
         <main class="console-content stack" id="links-root">
           <section class="card">
             <h2>Create a referral link</h2>
-            <p class="muted">Each link opens the referral form once and lasts seven days from now. Send it to a family directly, or to a provider who will pass it on. Nothing about the family is recorded until they submit.</p>
+            <p class="muted">A link opens the referral form and lasts seven days from now. Send it to a family directly, or to a provider who will pass it on. Nothing about a family is recorded until they submit.</p>
             <div class="form-actions">
+              <label class="field uses-field"><span>How many households may use it?</span><input type="number" id="max-uses" min="1" max="1000" value="1" /></label>
               <button type="button" class="btn btn-green" id="create-link">Create a new link</button>
               <span class="status-line" id="create-status"></span>
             </div>
+            <p class="muted small">One for a single family. More for a provider who will pass it on to several households; each submission counts one use, and the link stops working after the last.</p>
             <div class="notice notice-green hidden" id="new-link">
               <p class="eyebrow">Your new link — copy it now, it is shown only once</p>
               <label class="field"><span class="hidden">Link</span><input type="text" id="new-link-url" readonly /></label>
