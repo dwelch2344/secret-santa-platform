@@ -64,7 +64,6 @@ const BLOCKING = [
   [/\d+\s+[a-z]+\s+(st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|ct|court|way|pl|place|cir|circle)\b/i, "a street address"],
 ];
 const SCHOOL = /\b(school|elementary|academy|kindergarten|preschool|high school|middle school)\b/i;
-const LOOKS_LIKE_A_NAME = /^[A-Z][a-z]+(\s+[A-Z]\.?|\s+[A-Z][a-z]+)+$/;
 
 function problemsIn(text) {
   const blocking = BLOCKING.filter(([pattern]) => pattern.test(text)).map(([, label]) => label);
@@ -86,23 +85,6 @@ function updateWarning(target, text) {
   }
   target.classList.add("hidden");
   return false;
-}
-
-function updateLabelWarning() {
-  const target = form.querySelector('[data-warning-for="label"]');
-  const value = form.elements.submitter_label.value.trim();
-  const { blocking } = problemsIn(value);
-  if (blocking.length) {
-    target.textContent = `This looks like it contains ${blocking.join(" and ")}. A reference must not identify the household.`;
-    target.classList.remove("hidden");
-    return;
-  }
-  if (LOOKS_LIKE_A_NAME.test(value)) {
-    target.textContent = "This reads like a person's name. Use something only you understand instead — Alpha, Beta, Family 3.";
-    target.classList.remove("hidden");
-    return;
-  }
-  target.classList.add("hidden");
 }
 
 function watchField(input, warningTarget) {
@@ -196,7 +178,9 @@ function readForm() {
     email,
     phone,
     primary_channel: email && phone ? form.elements.primary_channel.value : email ? "email" : "phone",
-    submitter_label: onBehalf ? form.elements.submitter_label.value.trim() : "",
+    coordinator_note: form.elements.coordinator_note.value.trim(),
+    household_first_name: form.elements.filler_first_name.value.trim(),
+    submitter_first_name: onBehalf ? form.elements.submitter_first_name.value.trim() : "",
     members: readMembers(),
   };
 }
@@ -227,7 +211,7 @@ form.onsubmit = async (event) => {
     return;
   }
 
-  const texts = [referral.summary, referral.story, referral.submitter_label, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
+  const texts = [referral.summary, referral.story, referral.coordinator_note, referral.household_first_name, referral.submitter_first_name, ...referral.members.flatMap((m) => [m.needs, m.would_love, m.clothing_size, m.shoe_size])];
   const blocking = texts.flatMap((text) => problemsIn(text).blocking);
   if (blocking.length) {
     showSubmitError(`Please take out ${[...new Set(blocking)].join(" and ")} before submitting. The coordinator reaches you through step 4.`);
@@ -265,14 +249,8 @@ function showDone(refCode, referral) {
   const heading = document.createElement("h2");
   heading.textContent = `The referral is ${refCode}`;
   const body = document.createElement("p");
-  body.textContent = "The coordinator reviews every referral before it appears to sponsors, usually within a couple of days. Nothing is public yet. Write the number down — it is how the coordinator will refer to this household, and it is the only handle sponsors ever see.";
+  body.textContent = "The coordinator reviews every referral before it appears to donors, usually within a couple of days. Nothing is public yet. Write the number down — it is how the coordinator will refer to this household, and it is the only handle donors ever see.";
   done.append(eyebrow, heading, body);
-  if (referral.submitter_label) {
-    const label = document.createElement("p");
-    label.className = "muted";
-    label.textContent = `Your reference for it: ${referral.submitter_label}.`;
-    done.appendChild(label);
-  }
   const next = document.createElement("p");
   next.className = "muted";
   next.textContent = campaign?.contact_email
@@ -324,7 +302,6 @@ async function start() {
 
   watchField(form.elements.summary, form.querySelector('[data-warning-for="summary"]'));
   watchField(form.elements.story, form.querySelector('[data-warning-for="story"]'));
-  form.elements.submitter_label.addEventListener("input", updateLabelWarning);
   for (const radio of form.elements.contact_is) radio.addEventListener("change", syncContact);
   form.elements.email.addEventListener("input", syncContact);
   form.elements.phone.addEventListener("input", syncContact);
