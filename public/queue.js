@@ -41,7 +41,9 @@ function contactOf(household) {
 // channels, and which to try first. Never shown to anyone but the admin.
 function describeContact(contact) {
   if (!contact) return "";
-  const whose = contact.contact_is === "submitter" ? "the person who submitted on their behalf" : "the household itself";
+  const whose = contact.contact_is === "submitter"
+    ? `the person who submitted on their behalf${contact.submitter_first_name ? ` (${contact.submitter_first_name})` : ""}`
+    : `the household itself${contact.household_first_name ? ` (${contact.household_first_name})` : ""}`;
   const channels = [];
   if (contact.email) channels.push(`email ${contact.email}`);
   if (contact.phone) channels.push(`phone ${contact.phone}`);
@@ -187,6 +189,13 @@ function renderDetail(household) {
   privateCard.appendChild(
     el("p", null, contact ? `${describeContact(contact)} Never shown to sponsors.` : "No contact on file (it is deleted on rejection)."),
   );
+  if (contact?.contact_is === "submitter" && contact.household_first_name) {
+    privateCard.appendChild(el("p", "muted small", `Household contact name: ${contact.household_first_name}.`));
+  }
+  if (household.family_note) {
+    privateCard.appendChild(el("p", "eyebrow", "Note to the coordinator"));
+    privateCard.appendChild(el("div", "story-box", household.family_note));
+  }
   if (household.submitter_label) {
     privateCard.appendChild(el("p", "muted small", `The submitter's own reference for this household: "${household.submitter_label}".`));
   }
@@ -327,9 +336,9 @@ async function load() {
   const { data, error } = await supabase
     .from("households")
     .select(
-      "id, ref_code, summary, story, status, referred_on, consent_wish_list, consent_story, admin_note, submitter_label, " +
+      "id, ref_code, summary, story, status, referred_on, consent_wish_list, consent_story, admin_note, submitter_label, family_note, " +
         "household_members ( id, position, role, age, clothing_size, shoe_size, wish_items ( id, kind, label, position ) ), " +
-        "household_contacts ( email, phone, primary_channel, contact_is )",
+        "household_contacts ( email, phone, primary_channel, contact_is, household_first_name, submitter_first_name )",
     )
     .order("referred_on", { ascending: true });
 

@@ -41,9 +41,11 @@ URLs, not in query strings, not in logs, not in error messages, not in a CSV
 export. Households are a reference code (`#14`) and a story. **No photos,
 ever** (see the product repo's decisions.md for why).
 
-**One narrow exception: contact details.** A household's own email and phone
-number (or those of the person who referred them) may be stored, and only in
-the admin-only `household_contacts` table. They are deleted on rejection, on
+**One narrow exception: contact details.** A household's own email, phone
+number and contact first name (or those of the person who referred them) may
+be stored, and only in the admin-only `household_contacts` table. First names
+were added on 2026-10-21 at David's decision, with Alex working through it
+with stakeholders; never a surname, never in the summary, story or wish list. They are deleted on rejection, on
 withdrawal, and by the season-end purge; never shown to sponsors, never in a
 view, a URL, a log line, an error message or a CSV export. Phone numbers were
 added on 2026-10-20 at David's decision, superseding the 2026-10-10 "email
