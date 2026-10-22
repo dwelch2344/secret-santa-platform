@@ -135,7 +135,7 @@ Everything hangs off `campaigns` — no `organizations` table above it.
 
 | Table | Holds | Who reads it |
 |---|---|---|
-| `campaigns` | name, year, the four dates, rules, drop-off details, status | public columns through `public_campaign`; the admin reads the table; donors get drop-off details through a function once they hold a claim |
+| `campaigns` | name, year, the four dates, rules, drop-off details, status, logo URL and three brand colours | public columns through `public_campaign`; the admin reads the table; donors get drop-off details through a function once they hold a claim |
 | `households` | ref code, one-line summary, story (shared with donors; agreeing is required to submit), consents, status, the family's private note to the coordinator, the admin's private note | the admin; the public through `public_households` (live, unclaimed, open drive; story only with consent) |
 | `household_members` | role from a fixed list, age, sizes — **no names** | the admin; the public and claimants through views |
 | `wish_items` | one row per item, need or would-love, bought-at | same |
