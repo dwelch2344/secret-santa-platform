@@ -13,6 +13,10 @@ const form = document.getElementById("settings-form");
 const status = document.getElementById("settings-status");
 const saveStatus = document.getElementById("save-status");
 
+// The built-in palette. A colour equal to its default is saved as blank,
+// so changing the stylesheet later still reaches drives that never chose.
+const DEFAULT_COLORS = { brand_primary: "#a81e32", brand_accent: "#1b6b45", brand_background: "#f4efe9" };
+
 const TEXT_FIELDS = [
   "organization_name", "name", "coordinator_name", "contact_phone",
   "contact_email", "drop_off_address", "drop_off_hours",
@@ -25,6 +29,10 @@ function fillForm(campaign) {
   }
   form.elements.sponsor_cap.value = campaign.sponsor_cap;
   form.elements.show_public_count.checked = campaign.show_public_count;
+  form.elements.logo_url.value = campaign.logo_url ?? "";
+  for (const [name, fallback] of Object.entries(DEFAULT_COLORS)) {
+    form.elements[name].value = campaign[name] ?? fallback;
+  }
 }
 
 function readForm() {
@@ -34,6 +42,11 @@ function readForm() {
   }
   values.sponsor_cap = Number(form.elements.sponsor_cap.value);
   values.show_public_count = form.elements.show_public_count.checked;
+  values.logo_url = form.elements.logo_url.value.trim() || null;
+  for (const [name, fallback] of Object.entries(DEFAULT_COLORS)) {
+    const chosen = form.elements[name].value.toLowerCase();
+    values[name] = chosen === fallback ? null : chosen;
+  }
   return values;
 }
 
@@ -187,3 +200,7 @@ form.onsubmit = async (event) => {
 mountConsole({ title: "Drive settings" });
 const session = await requireSession(root);
 if (session) await load();
+
+document.getElementById("reset-colors").onclick = () => {
+  for (const [name, fallback] of Object.entries(DEFAULT_COLORS)) form.elements[name].value = fallback;
+};
