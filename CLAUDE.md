@@ -46,10 +46,11 @@ the person filling in the form gives a **first name, email and/or phone,
 and who referred them**, nothing else. They are stored only in the
 admin-only `household_contacts` table, deleted on rejection, on withdrawal
 and by the season-end purge; never shown to donors, never in a view, a URL,
-a log line, an error message or a CSV export. A checkbox records whether
-that person is not the parent or guardian (a therapist, social worker or
-other coordinator acting for the household). No last names, no children's
-names, no addresses. Free text is still refused if it contains a phone
+a log line, an error message or a CSV export. "Who referred you" is asked
+in its own Provider section and stored with the contact. The submitter must
+attest "I am the parent/guardian of the children listed" (2026-10-22), so
+every contact is the household's own. No last names, no children's names,
+no addresses. Free text is still refused if it contains a phone
 number, email or street address. This supersedes the product repo's
 2026-10-10 "email only" entry.
 

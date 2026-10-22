@@ -1,7 +1,7 @@
 -- The locked contact shape: first name, email, phone, who referred them,
 -- and the not-a-guardian checkbox; story consent is opt-in.
 begin;
-select plan(7);
+select plan(8);
 
 update campaigns set status = 'open' where id = '00000000-0000-4000-a000-000000002026';
 insert into referral_links (token_hash, expires_at, max_uses)
@@ -11,6 +11,7 @@ create temporary table base as select jsonb_build_object(
   'summary', 'Household of 2 — one adult, one child',
   'story', 'Hours were cut this autumn.',
   'consent_wish_list', true,
+  'is_guardian', true,
   'members', jsonb_build_array(jsonb_build_object('role', 'girl', 'age', 6, 'needs', 'Coat'))
 ) as payload;
 grant select on base to anon;
@@ -23,6 +24,11 @@ create temporary table worker as select submit_referral('lockdown-token',
 select throws_ok(
   $$ select submit_referral('lockdown-token', (select payload || '{"email":"x@example.test","referral_source":"call 801 555 0100"}' from base)) $$,
   'P0001', null, 'a phone number in the referral source is refused'
+);
+select throws_ok(
+  $$ select submit_referral('lockdown-token', (select (payload - 'is_guardian') || '{"email":"x@example.test"}' from base)) $$,
+  'P0001', 'The form must be filled in by the parent or guardian of the children listed.',
+  'without the guardian attestation the form is refused'
 );
 reset role;
 
