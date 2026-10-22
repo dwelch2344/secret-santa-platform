@@ -35,7 +35,7 @@
 
         <section class="card">
           <h2><span class="muted">2</span> The story</h2>
-          <p class="muted small">Shown to donors only if you say yes in step 6.</p>
+          <p class="muted small">The story will be shared with potential donors.</p>
           <label class="field">
             <span>What should a donor know?</span>
             <textarea name="story" maxlength="1500" placeholder="Describe in a few sentences the hardships you're facing and why you need help"></textarea>
@@ -64,7 +64,7 @@
 
         <section class="card">
           <h2><span class="muted">5</span> Contact information (Private)</h2>
-          <p class="muted small">How the coordinator can reach you. Only the coordinator sees this — never donors, never the public list.</p>
+          <p class="muted small">How the coordinator can reach you. Only the coordinator sees this.</p>
 
           <label class="field">
             <span>Your first name</span>
@@ -89,22 +89,22 @@
             <label class="check"><input type="radio" name="primary_channel" value="phone" /> <span>Phone</span></label>
           </div>
 
-          <label class="field">
-            <span>Who referred you? <span class="muted">(optional)</span></span>
-            <input type="text" name="referral_source" maxlength="120" placeholder="e.g. school counselor, family services, a friend" />
-            <span class="hint">An organization or a role is enough.</span>
-          </label>
-
-          <label class="check"><input type="checkbox" name="not_guardian" /> <span>I am not the parent or guardian of this household <span class="muted">(for example, a therapist, social worker or other coordinator filling this in for them)</span>.</span></label>
-          <div class="notice notice-amber small hidden" data-warning-for="contact"></div>
           <div class="notice notice-red small hidden" id="contact-error"></div>
         </section>
 
         <section class="card">
-          <h2><span class="muted">6</span> Consent</h2>
-          <label class="check"><input type="checkbox" name="consent_wish_list" required /> <span>The household agrees that the wish list and the one-line description can be shown to donors.</span></label>
-          <label class="check"><input type="checkbox" name="consent_story" /> <span>Yes, I'm okay with sharing my story on the donor page. <span class="muted">Leave unticked and only the coordinator reads it.</span></span></label>
-          <p class="muted small">No photos are collected, now or later.</p>
+          <h2><span class="muted">6</span> Provider</h2>
+          <label class="field">
+            <span>Who referred you?</span>
+            <input type="text" name="referral_source" maxlength="120" placeholder="e.g. school counselor, family services" />
+            <span class="hint">An organization or a role is enough.</span>
+          </label>
+        </section>
+
+        <section class="card">
+          <h2><span class="muted">7</span> Consent</h2>
+          <label class="check"><input type="checkbox" name="is_guardian" required /> <span>I am the parent/guardian of the children listed.</span></label>
+          <label class="check"><input type="checkbox" name="consent_share" checked required /> <span>By submitting this form I agree to share my story and information with potential donors (names removed).</span></label>
         </section>
 
         <div class="notice notice-red hidden" id="submit-error"></div>

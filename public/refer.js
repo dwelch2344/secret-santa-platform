@@ -168,14 +168,16 @@ function readForm() {
   return {
     summary: form.elements.summary.value.trim(),
     story: form.elements.story.value.trim(),
-    consent_wish_list: form.elements.consent_wish_list.checked,
-    consent_story: form.elements.consent_story.checked,
+    // One agreement covers the wish list and the story (2026-10-22 copy);
+    // the guardian line is its own required attestation.
+    is_guardian: form.elements.is_guardian.checked,
+    consent_wish_list: form.elements.consent_share.checked,
+    consent_story: form.elements.consent_share.checked,
     first_name: form.elements.first_name.value.trim(),
     email,
     phone,
     primary_channel: email && phone ? form.elements.primary_channel.value : email ? "email" : "phone",
     referral_source: form.elements.referral_source.value.trim(),
-    not_guardian: form.elements.not_guardian.checked,
     coordinator_note: form.elements.coordinator_note.value.trim(),
     members: readMembers(),
   };
@@ -253,11 +255,6 @@ function showDone(refCode, referral) {
     ? `If anything needs changing, email the coordinator at ${campaign.contact_email} and quote ${refCode}.`
     : `If anything needs changing, contact the coordinator and quote ${refCode}.`;
   done.appendChild(next);
-  if (referral.not_guardian) {
-    const again = document.createElement("p");
-    again.textContent = "Referring another household? Open the same link again if it allows more uses; the link page will say if it has been used up.";
-    done.appendChild(again);
-  }
   done.classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
