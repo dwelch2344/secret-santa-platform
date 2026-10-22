@@ -1302,3 +1302,31 @@ p.hint {
   color: var(--ink-3);
   margin: -6px 0 12px;
 }
+
+/* A logo set in Drive settings replaces the gift icon. */
+.brand img {
+  height: 32px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  flex: none;
+}
+
+.color-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.color-row .field {
+  min-width: 150px;
+}
+
+input[type="color"] {
+  width: 64px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}

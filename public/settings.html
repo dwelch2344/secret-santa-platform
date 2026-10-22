@@ -58,6 +58,18 @@
             </div>
 
             <section class="card">
+              <h2>Branding</h2>
+              <label class="field"><span>Logo URL</span><input type="url" name="logo_url" maxlength="500" placeholder="https://example.org/logo.png" /><span class="hint">A public https link to an image. It replaces the gift icon in every header. Leave blank for the gift icon.</span></label>
+              <div class="color-row">
+                <label class="field"><span>Primary (buttons)</span><input type="color" name="brand_primary" /></label>
+                <label class="field"><span>Accent (console, links)</span><input type="color" name="brand_accent" /></label>
+                <label class="field"><span>Background</span><input type="color" name="brand_background" /></label>
+              </div>
+              <div class="form-actions"><button type="button" class="btn btn-outline btn-sm" id="reset-colors">Reset to the default colours</button></div>
+              <p class="muted small">Colours apply to every page after saving. Free-form CSS isn't offered on purpose: it could restyle the consent wording.</p>
+            </section>
+
+            <section class="card">
               <h2>Rules</h2>
               <ul class="row-list">
                 <li><span><strong>Approval required before a referral goes public</strong><br /><span class="muted small">Built in — a household is never visible until the coordinator approves it.</span></span><span class="actions"><span class="pill pill-live">Always on</span></span></li>
@@ -85,6 +97,7 @@
     </div>
 
     <script src="/env.js"></script>
+    <script type="module" src="brand.js"></script>
     <script type="module" src="settings.js"></script>
   </body>
 </html>

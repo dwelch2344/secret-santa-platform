@@ -368,6 +368,21 @@ own words, you understand the slice.
 - **Say it back:** a required checkbox is only a rule if the database
   checks it too. Both attestations are checked in `submit_referral`.
 
+### 24. Branding: a logo by URL and three colours
+
+- Drive settings gains a Branding card: a logo URL (https only) that
+  replaces the gift icon in every header, and three colour pickers —
+  primary (buttons), accent (console, links), background. Blank or default
+  means the built-in look. `brand.js` applies them on every page.
+- Not free-form CSS, on purpose: a stylesheet from a settings box could
+  restyle the consent wording or send page details to another server.
+  Colours are checked to be hex values in the database itself.
+- The security policy now allows images from any https host, for the
+  logo. Images cannot run code.
+- **Say it back:** give people the knob they need, not a blank text box.
+  Three colours cover "make it look like us"; arbitrary CSS would also
+  cover "make it lie".
+
 ## Rebalancing into Alex's repos later
 
 Stories normally live in `Alexleop33/secret-santa-product` and PRs close

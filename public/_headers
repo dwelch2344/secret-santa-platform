@@ -15,7 +15,8 @@
 #                           live site, so both hosts are listed; config.js
 #                           decides which one a page actually talks to, by
 #                           hostname, and never both.
-#   img-src                 our own images; data: for any inline icon
+#   img-src                 our own images; data: for any inline icon;
+#                           https: for the drive's logo, set by the admin
 #   font-src 'self'         the two font files in public/fonts, nothing from Google
 #   frame-ancestors 'none'  nobody may put this site in an <iframe>
 #   base-uri / form-action  no rewriting where links or forms point
@@ -23,6 +24,6 @@
 # nosniff: the browser must trust our Content-Type, not guess.
 # no-referrer: never tell another site which page someone came from.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://esm.sh; connect-src 'self' https://wiobafdpmzzrzzqavjbf.supabase.co https://drmbknjbaigfvhxobpav.supabase.co; img-src 'self' data:; style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://esm.sh; connect-src 'self' https://wiobafdpmzzrzzqavjbf.supabase.co https://drmbknjbaigfvhxobpav.supabase.co; img-src 'self' data: https:; style-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
