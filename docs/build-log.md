@@ -352,6 +352,22 @@ own words, you understand the slice.
   reacting to each new screen. The form, the database and CLAUDE.md now
   say the same four things.
 
+### 23. Final form copy — S4S Nominations 2026 doc
+
+- From the stakeholder doc: the story section says "The story will be
+  shared with potential donors"; "Who referred you?" moves into its own
+  Provider section; the not-a-guardian checkbox and the "never donors"
+  and "no photos" lines are gone.
+- Consent is two required boxes: "I am the parent/guardian of the children
+  listed" (unticked, must be ticked) and "By submitting this form I agree
+  to share my story and information with potential donors (names
+  removed)" (ticked by default, must stay ticked). The database refuses a
+  submission without either.
+- This reverses #78's opt-in story and closes the on-behalf path: a
+  therapist or social worker can no longer submit for a family.
+- **Say it back:** a required checkbox is only a rule if the database
+  checks it too. Both attestations are checked in `submit_referral`.
+
 ## Rebalancing into Alex's repos later
 
 Stories normally live in `Alexleop33/secret-santa-product` and PRs close

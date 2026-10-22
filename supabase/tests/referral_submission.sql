@@ -35,6 +35,7 @@ create temporary table good as select jsonb_build_object(
   'story', 'Work hours were cut in the autumn. Warm clothes first, then one thing each to open.',
   'email', 'Family.Test@example.test',
   'consent_wish_list', true,
+  'is_guardian', true,
   'consent_story', true,
   'members', jsonb_build_array(
     jsonb_build_object('role', 'boy', 'age', 9, 'clothing_size', 'Shirt 10', 'shoe_size', '3',
@@ -87,7 +88,7 @@ select throws_ok(
 select throws_ok(
   format('select submit_referral(%L, (select payload || ''{"consent_wish_list": false}'' from good))', (select token from link_b)),
   'P0001',
-  'An adult in the household needs to agree to share the wish list.',
+  'Please agree to share the story and information with potential donors.',
   'the wish-list consent is required'
 );
 
